@@ -19,6 +19,6 @@ def stack(files):
 
 mystack = stack(allfiles(DIR)[1:1000])
 
-hour1 = sc.parallelize(mystack).cache()
+sparkstack = sc.parallelize(mystack).cache()
 
-hour1.map(lambda grid: grid.max()).reduce(lambda a, b: np.max((a,b)))
+sparkstack.map(lambda grid: grid.max()).reduce(lambda a, b: np.max((a,b)))
