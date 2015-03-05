@@ -12,13 +12,14 @@ def allfiles(DIR):
     return os.listdir(DIR)
 
 def stack(files):
+    out=[]
     for filen in files:
-        out=list()
-        out.append(gdal.Open(filen).ReadAsArray())
-    return np.dstack(out)
+        out.append(np.array_split(gdal.Open(filen).ReadAsArray(),10))
+    return out
 
-mystack = stack(allfiles(DIR)[1:1000])
+mystack = stack( allfiles(DIR)[0:1] )
 
-sparkstack = sc.parallelize(mystack).cache()
+sparkstack = sc.parallelize(mystack, len(mystack)).cache()
+.import centralamerica_records_table.csv central_america
 
-sparkstack.map(lambda grid: grid.max()).reduce(lambda a, b: np.max((a,b)))
+gmax = sparkstack.map(lambda grid: grid.max()).reduce(lambda a, b: np.max( (a,b) ))
